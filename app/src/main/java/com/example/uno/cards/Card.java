@@ -6,6 +6,7 @@ import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.example.uno.db.AppDatabase;
 import com.google.auto.value.AutoValue;
 
 import java.lang.annotation.Inherited;
@@ -16,11 +17,15 @@ import java.lang.annotation.Inherited;
 public abstract class Card {
     @PrimaryKey(autoGenerate = true)
     public long id;
+    public int idImage;
     private String urlImage;
     private Color color;
 
+    private Boolean drawn;
+
     public Card() {
         urlImage = "";
+        drawn = false;
     }
 
     // Room uses this factory method to create User objects.
@@ -32,8 +37,24 @@ public abstract class Card {
     public Card(String urlImage, Color color) {
         this.urlImage = urlImage;
         this.color = color;
+        drawn = false;
     }
 
+    public Boolean getDrawn() {
+        return drawn;
+    }
+
+    public void setDrawn(Boolean drawn) {
+        this.drawn = drawn;
+    }
+
+    public int getIdImage() {
+        return idImage;
+    }
+
+    public void setIdImage(int idImage) {
+        this.idImage = idImage;
+    }
 
     public String getUrlImage() {
         return urlImage;
@@ -66,6 +87,8 @@ public abstract class Card {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    //public abstract void updateCard(AppDatabase db);
 
     @Override
     public String toString() {

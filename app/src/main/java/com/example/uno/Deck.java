@@ -3,12 +3,10 @@ package com.example.uno;
 import android.graphics.Color;
 import android.util.Log;
 
-import com.example.uno.cards.ActionCard;
 import com.example.uno.cards.Card;
 import com.example.uno.cards.CommonCard;
 import com.example.uno.cards.SpecialCard;
 import com.example.uno.cards.TypeAction;
-import com.example.uno.dao.CardDao;
 import com.example.uno.dao.CommonCardDao;
 import com.example.uno.dao.SpecialCardDao;
 import com.example.uno.db.AppDatabase;
@@ -19,27 +17,33 @@ import java.util.List;
 import java.util.Random;
 
 public class Deck {
-    private List<Card> cards;
-    private final AppDatabase db;
+    static public List<Card> cards = new ArrayList<>();
+    private AppDatabase db;
 
     public Deck(AppDatabase db) {
-        cards = new ArrayList<>();
         this.db = db;
         getPlayingCards();
     }
 
     private void getPlayingCards() {
-        CardDao cardDao = db.cardDao();
-        List<Card> cardsDB = cardDao.getAll();
+        getCardsDB();
 
-        Log.d("teste", String.format("%d", cardsDB.size()));
-        if (cardsDB.size() == 0) {
+        Log.d("teste", String.format("%d", cards.size()));
+        if (cards.size() == 0) {
             Log.d("teste", "gerando cartas");
             generateCards();
         } else {
             Log.d("teste", "banco possui cartas");
-            cards = cardsDB;
+            cards = cards;
         }
+    }
+
+    private void getCardsDB() {
+        CommonCardDao commonCardDao = db.commonCardDao();
+        SpecialCardDao specialCardDao = db.specialCardDao();
+
+        cards.addAll(commonCardDao.getAll());
+        cards.addAll(specialCardDao.getAll());
     }
 
     private void generateCards() {
@@ -112,32 +116,77 @@ public class Deck {
         }
     }
 
-    private void addCard(Card card) {
+    static public void addCard(Card card) {
         //CardDao cardDao = db.cardDao();
 
         //cardDao.insertCard(card);
         cards.add(card);
     }
 
-    public void printList() {
-        for(Card card: cards) {
-            if (card instanceof ActionCard) {
-                Log.d("test", ((ActionCard) card).getAction().toString() );
+    static public Card raffleCard(AppDatabase db) {
+        Random random = new Random();
+        int index = random.nextInt(cards.size());
+        Card c = null;
+
+        // Verifica se todas as cartas foram sorteadas
+        Integer count = 0;
+        for (Card card: cards) {
+            if (card.getDrawn()) count += 1;
+        }
+
+        Log.d("teste", count.toString());
+
+        if (count == 108) {
+            Log.d("teste", "sorteou tudo limpando");
+            clear(db);
+            index = random.nextInt(cards.size());
+            c = cards.get(index);
+        } else {
+            // Verifica se carta ja foi sorteada
+            c = cards.get(index);
+            while (c.getDrawn() == true) {
+                Log.d("teste", "ja foi sorteada");
+                index = random.nextInt(cards.size());
+                c = cards.get(index);
             }
         }
 
-        Log.d("test", String.format("%d", cards.size()));
-    }
-
-    public Card raffleCard() {
-        Random random = new Random();
-        int index = random.nextInt(cards.size());
-
-        return cards.get(index);
+        return c;
     }
 
     public void shuffle() {
         Collections.shuffle(cards);
+    }
+
+    static public List<Card> getList() {
+        return cards;
+    }
+
+    static public List<Card> getdrawnCards() {
+        List<Card> drawnCards = new ArrayList<>();
+
+        for(Card c: cards) {
+            if (c.getDrawn()) drawnCards.add(c);
+        }
+
+        return drawnCards;
+    }
+
+    static public void clear(AppDatabase db) {
+        for (Card c: cards) {
+            if (c.getDrawn() == true) {
+                c.setDrawn(false);
+                //c.updateCard(db);
+
+                if (c instanceof CommonCard) {
+                    CommonCardDao commonCardDao = db.commonCardDao();
+                    commonCardDao.updateCommonCard((CommonCard) c);
+                } else {
+                    SpecialCardDao specialCardDao = db.specialCardDao();
+                    specialCardDao.updateSpecialCard((SpecialCard) c);
+                }
+            }
+        }
     }
 
 }

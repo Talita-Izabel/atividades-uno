@@ -5,24 +5,41 @@ import android.graphics.Color;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 
-@Entity
-public class SpecialCard extends ActionCard {
+import com.example.uno.dao.SpecialCardDao;
+import com.example.uno.db.AppDatabase;
 
-//    public SpecialCard(TypeAction typeAction, String urlImage) {
-//        super(typeAction, Color.valueOf(Color.BLACK), urlImage);
-//    }
+@Entity
+public class SpecialCard extends Card {
+
+    private TypeAction action;
 
     public SpecialCard() {
-        super(TypeAction.SKIP, Color.valueOf(Color.BLACK), "teste");
+        super("teste", Color.valueOf(Color.BLACK));
+        this.action = TypeAction.SKIP;
     }
+
+    public TypeAction getAction() {
+        return action;
+    }
+
+    public void setAction(TypeAction action) {
+        this.action = action;
+    }
+//    @Override
+//    public void updateCard(AppDatabase db) {
+//        SpecialCardDao specialCardDao = db.specialCardDao();
+//        specialCardDao.updateSpecialCard((SpecialCard) this);
+//    }
 
     @Ignore
     public SpecialCard(TypeAction typeAction, Color color, String urlImage) {
-        super(typeAction, color, urlImage);
+        super(urlImage, color);
+        this.action = typeAction;
     }
 
-    @Override
-    public void execute() {
-
-    }
+//    @Override
+//    public void updateCard(AppDatabase db) {
+//        SpecialCardDao specialCardDao = db.specialCardDao();
+//        specialCardDao.updateSpecialCard((SpecialCard) this);
+//    }
 }
