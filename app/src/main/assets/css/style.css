@@ -1,0 +1,45 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
+#draw{
+    width: 120px;
+    height: 60px;
+    position: absolute;
+    left: calc(50vw - 50px);
+    top: calc(70vh - 20px);
+    cursor: pointer;
+}
+
+#list{
+    width: 120px;
+    height: 60px;
+    position: absolute;
+    left: calc(50vw - 50px);
+    top: calc(80vh - 20px);
+    cursor: pointer;
+}
+
+#clear{
+    width: 120px;
+    height: 60px;
+    position: fixed;
+    left: calc(50vw - 50px);
+    top: calc(90vh - 20px);
+    cursor: pointer;
+}
+
+#image{
+    width: 250px;
+    position: absolute;
+    left: calc(33vw - 50px);
+    top: calc(10vh - 20px);
+}
+
+#text{
+    position: absolute;
+    left: calc(36vw - 50px);
+    top: calc(50vh - 20px);
+}
+

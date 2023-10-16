@@ -9,7 +9,7 @@ import com.example.uno.cards.SpecialCard;
 import com.example.uno.dao.CommonCardDao;
 import com.example.uno.dao.SpecialCardDao;
 
-@Database(entities = {CommonCard.class, SpecialCard.class}, version = 6)
+@Database(entities = {CommonCard.class, SpecialCard.class}, version = 6, exportSchema = false)
 @TypeConverters({ColorConverter.class, TypeActionConverter.class})
 public abstract class AppDatabase extends RoomDatabase {
     public abstract CommonCardDao commonCardDao();

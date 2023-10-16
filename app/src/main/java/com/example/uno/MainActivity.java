@@ -8,6 +8,10 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -23,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     static AppDatabase db;
     private ImageView imageView;
     private Deck deck;
+    static WebView webView;
 
     @SuppressLint("WrongThread")
     @Override
@@ -30,10 +35,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = DatabaseManager.getDatabase(this);
+        if (db == null) {
+            db = DatabaseManager.getDatabase(this);
+            deck = new Deck(db);
+        }
 
-        deck = new Deck(db);
+        configureWebView();
     }
+
+    private void configureWebView() {
+        // Configura a WebView
+        webView = (WebView) findViewById(R.id.webView);
+        webView.setVisibility(View.INVISIBLE);
+        webView.setWebChromeClient(new WebChromeClient());
+
+        // Habilita o JS
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        // Garante que usará a WebView e não o navegador padrão
+        webView.setWebViewClient(new WebViewClient(){
+            // Callback que determina quando terminou de ser carregada a
+            // WebView, para trocarmos a imagem de carregamento por ela
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                ImageView imageView = (ImageView)
+                        findViewById(R.id.imageView);
+                imageView.setVisibility(View.INVISIBLE);
+                webView.setVisibility(View.VISIBLE);
+            }
+        });
+
+        // Associa a interface (a ser definida abaixo) e carrega o HTML
+        webView.addJavascriptInterface(new WebAppInterface(this),"Android");
+        webView.loadUrl("file:///android_asset/index.html");
+    }
+
 
     public void raffle(View view){
         Card card = deck.raffleCard(db);

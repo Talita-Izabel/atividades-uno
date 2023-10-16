@@ -34,7 +34,7 @@ public class Deck {
             generateCards();
         } else {
             Log.d("teste", "banco possui cartas");
-            cards = cards;
+            //cards = cards;
         }
     }
 
@@ -165,8 +165,12 @@ public class Deck {
     static public List<Card> getdrawnCards() {
         List<Card> drawnCards = new ArrayList<>();
 
+        Log.d("lista", String.valueOf(cards.size()));
         for(Card c: cards) {
-            if (c.getDrawn()) drawnCards.add(c);
+            if (c.getDrawn()) {
+                Log.d("lista", c.toString());
+                drawnCards.add(c);
+            }
         }
 
         return drawnCards;
